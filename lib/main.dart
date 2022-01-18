@@ -1,12 +1,66 @@
+import 'package:calorie_calculator/data/datasources/local_data_source.dart';
+import 'package:calorie_calculator/domain/entities/meal.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 
-void main() {
+Database? database;
+
+String dateToString(DateTime date) {
+  return '${date.day}.${date.month}.${date.year}';
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  database = await openDatabase('my_db.db', version: 1,
+      onCreate: (Database db, int version) async {
+    await db.execute('CREATE TABLE Dates (date STRING)');
+    await db.execute(
+        'CREATE TABLE Meals (date STRING , id STRING, name STRING, calories REAL, weight REAL, portion STRING)');
+  });
+
+  // dev
+  database!.delete('Meals');
+  database!.delete('Dates');
+
+  database!.insert('Dates', {
+    'date': dateToString(
+        DateTime.now().toLocal().subtract(const Duration(days: 1))),
+  });
+  database!.insert('Meals', {
+    'id': 'id',
+    'date': dateToString(
+        DateTime.now().toLocal().subtract(const Duration(days: 1))),
+    'name': 'name',
+    'calories': 100,
+    'weight': 10,
+    'portion': 'portion'
+  });
+
+  var dates = await database!.query(
+    'Dates',
+    where: 'date = ?',
+    whereArgs: [
+      dateToString(DateTime.now().toLocal()),
+    ],
+  );
+
+  if (dates.isEmpty) {
+    database!.insert('Dates', {
+      'date': dateToString(DateTime.now().toLocal()),
+    });
+  }
+
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -49,16 +103,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  LocalDataSource dataSource = LocalDataSourceImpl();
 
   void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+    dataSource.getDates();
   }
 
   @override
