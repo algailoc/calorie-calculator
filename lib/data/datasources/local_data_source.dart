@@ -1,11 +1,13 @@
 import 'package:calorie_calculator/domain/entities/date.dart';
 import 'package:calorie_calculator/domain/entities/meal.dart';
 import 'package:calorie_calculator/main.dart';
+import 'package:uuid/uuid.dart';
 
 abstract class LocalDataSource {
   Future<List<Date>> getDates();
-  Future<void> addMeal(Meal meal);
-  Future<void> updateMeal(Meal meal);
+  Future<Meal> addMeal(Meal meal);
+  Future<Meal> updateMeal(Meal meal);
+  Future<String> deleteMeal(Meal meal);
 }
 
 class LocalDataSourceImpl extends LocalDataSource {
@@ -30,13 +32,30 @@ class LocalDataSourceImpl extends LocalDataSource {
   }
 
   @override
-  Future<void> addMeal(Meal meal) async {
+  Future<Meal> addMeal(Meal meal) async {
+    var uuid = const Uuid();
+
     database!.insert('Meals', meal.toJson());
+    return Meal(
+        id: uuid.v4(),
+        date: meal.date,
+        name: meal.name,
+        calories: meal.calories,
+        weight: meal.weight,
+        portion: meal.portion);
   }
 
   @override
-  Future<void> updateMeal(Meal meal) async {
+  Future<Meal> updateMeal(Meal meal) async {
     database!
         .update('Meals', meal.toJson(), where: 'id = ?', whereArgs: [meal.id]);
+
+    return meal;
+  }
+
+  @override
+  Future<String> deleteMeal(Meal meal) async {
+    database!.delete('Meals', where: 'id = ?', whereArgs: [meal.id]);
+    return meal.id;
   }
 }
