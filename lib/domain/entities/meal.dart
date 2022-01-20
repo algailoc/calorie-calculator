@@ -32,7 +32,7 @@ class Meal {
         date: json['date'],
         calories: json['calories'],
         weight: json['weight'],
-        portion: json['portion']);
+        portion: json['portion'].toString());
   }
 
   @override

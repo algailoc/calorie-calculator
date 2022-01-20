@@ -9,12 +9,14 @@ class DatesListItem extends StatelessWidget {
   final String dateId;
   const DatesListItem(this.dateId, {Key? key}) : super(key: key);
 
-  double getDailyCalories(Date date) {
+  String getDailyCalories(Date date) {
     double result = 0;
     for (var meal in date.meals) {
       result += meal.calories;
     }
-    return result;
+    RegExp regex = RegExp(r"([.]*0+)(?!.*\d)");
+
+    return result.toStringAsFixed(3).replaceAll(regex, '');
   }
 
   void navigateToDayScreen(BuildContext context) {
