@@ -28,7 +28,7 @@ class LocalDataSourceImpl extends LocalDataSource {
       result.add(Date(date: date['date'] as String, meals: meals));
     }
 
-    return result;
+    return result.reversed.toList();
   }
 
   @override

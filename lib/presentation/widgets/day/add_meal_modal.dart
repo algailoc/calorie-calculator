@@ -1,15 +1,16 @@
 import 'package:calorie_calculator/domain/entities/meal.dart';
 import 'package:calorie_calculator/presentation/bloc/dates_bloc.dart';
 import 'package:calorie_calculator/utils/date_converters.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:calorie_calculator/utils/getCaloriesPerPortion.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddOrUpdateMealModal extends StatefulWidget {
   final Meal? meal;
+  final String? date;
 
-  const AddOrUpdateMealModal({Key? key, this.meal}) : super(key: key);
+  const AddOrUpdateMealModal({Key? key, this.meal, this.date})
+      : super(key: key);
 
   @override
   _AddMealModalState createState() => _AddMealModalState();
@@ -48,15 +49,64 @@ class _AddMealModalState extends State<AddOrUpdateMealModal> {
   }
 
   void addMeal() {
-    print(dateToString(DateTime.now().toLocal()));
     Meal meal = Meal(
-        id: 'id',
-        date: dateToString(DateTime.now().toLocal()),
+        id: widget.meal?.id ?? 'id',
+        date: widget.meal?.date ??
+            widget.date ??
+            dateToString(DateTime.now().toLocal()),
         name: nameController.text,
-        calories: double.parse(caloriesController.text),
-        weight: double.parse(weightController.text),
+        calories: caloriesController.text.isEmpty
+            ? 0.0
+            : double.parse(caloriesController.text),
+        weight: weightController.text.isEmpty
+            ? 0.0
+            : double.parse(weightController.text),
         portion: portionController.text);
-    BlocProvider.of<DatesBloc>(context).add(AddMealEvent(meal));
+    widget.meal == null
+        ? BlocProvider.of<DatesBloc>(context).add(AddMealEvent(meal))
+        : BlocProvider.of<DatesBloc>(context).add(UpdateMealEvent(meal));
+    Navigator.of(context).pop();
+  }
+
+  void calculateCalories(BuildContext context) async {
+    if (nameController.text.isNotEmpty) {
+      try {
+        double calories = await getCaloriesPerPortion(
+            portionController.text, nameController.text);
+        caloriesController.text = calories.toString();
+      } catch (e) {
+        print(e);
+      }
+    }
+  }
+
+  Widget generateCustomInput(
+      {required TextEditingController controller,
+      required String hint,
+      String suffix = ''}) {
+    return Container(
+      height: 60,
+      alignment: Alignment.center,
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        border: Border(
+            bottom: BorderSide(width: 2, color: Colors.blueGrey.shade600)),
+      ),
+      child: TextField(
+        onChanged: (_) {
+          setState(() {});
+        },
+        controller: controller,
+        decoration: InputDecoration(
+          fillColor: Colors.orange.shade600,
+          labelText: hint,
+          suffixText: suffix,
+          border: InputBorder.none,
+          floatingLabelBehavior: FloatingLabelBehavior.auto,
+        ),
+      ),
+    );
   }
 
   @override
@@ -101,9 +151,31 @@ class _AddMealModalState extends State<AddOrUpdateMealModal> {
                 ),
               ],
             ),
-            generateCustomInput(controller: weightController, hint: 'Weight'),
             generateCustomInput(
-                controller: caloriesController, hint: 'Calories'),
+                controller: weightController, hint: 'Weight', suffix: 'g'),
+            Row(
+              children: [
+                Expanded(
+                  child: generateCustomInput(
+                      controller: caloriesController,
+                      hint: 'Calories',
+                      suffix: 'kcal'),
+                ),
+                Container(
+                    width: 40,
+                    height: 40,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: IconButton(
+                        tooltip: nameController.text.isNotEmpty
+                            ? 'Calculate'
+                            : 'Fill in name field',
+                        onPressed: () => calculateCalories(context),
+                        icon: const Icon(Icons.calculate_outlined)))
+              ],
+            ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -111,7 +183,7 @@ class _AddMealModalState extends State<AddOrUpdateMealModal> {
                 TextButton(
                   onPressed: addMeal,
                   child: const Text(
-                    'OK',
+                    'Save',
                     style: TextStyle(color: Colors.white),
                   ),
                   style: TextButton.styleFrom(
@@ -128,22 +200,4 @@ class _AddMealModalState extends State<AddOrUpdateMealModal> {
       ),
     );
   }
-}
-
-Widget generateCustomInput(
-    {required TextEditingController controller, required String hint}) {
-  return Container(
-    height: 60,
-    alignment: Alignment.center,
-    margin: const EdgeInsets.symmetric(vertical: 4),
-    padding: const EdgeInsets.symmetric(horizontal: 8),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(4),
-      border: Border.all(width: 2, color: Colors.blueGrey.shade600),
-    ),
-    child: TextField(
-      controller: controller,
-      decoration: InputDecoration.collapsed(hintText: hint),
-    ),
-  );
 }
