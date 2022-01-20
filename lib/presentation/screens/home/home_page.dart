@@ -62,12 +62,40 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
+  void openAddDateModal(BuildContext context) async {
+    DateTime? result = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now().subtract(const Duration(days: 30)),
+        lastDate: DateTime.now());
+    if (result != null) {
+      BlocProvider.of<DatesBloc>(context)
+          .add(AddDateEvent(dateToString(result)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: BlocBuilder<DatesBloc, DatesState>(
+      child: BlocConsumer<DatesBloc, DatesState>(
+        listener: (context, state) {
+          if (state is DateFailureState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Date already exists')));
+          }
+        },
         builder: (context, state) {
           return Scaffold(
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            floatingActionButton: IconButton(
+                tooltip: 'Add date',
+                iconSize: 40,
+                splashColor: Colors.amber,
+                onPressed: () => openAddDateModal(context),
+                icon: const Icon(
+                  Icons.add,
+                  size: 40,
+                )),
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 20),
               child: Column(

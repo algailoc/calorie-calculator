@@ -8,6 +8,7 @@ abstract class LocalDataSource {
   Future<Meal> addMeal(Meal meal);
   Future<Meal> updateMeal(Meal meal);
   Future<String> deleteMeal(Meal meal);
+  Future<String> addDate(String date);
 }
 
 class LocalDataSourceImpl extends LocalDataSource {
@@ -28,26 +29,28 @@ class LocalDataSourceImpl extends LocalDataSource {
       result.add(Date(date: date['date'] as String, meals: meals));
     }
 
-    return result.reversed.toList();
+    return result;
   }
 
   @override
   Future<Meal> addMeal(Meal meal) async {
     var uuid = const Uuid();
 
-    database!.insert('Meals', meal.toJson());
-    return Meal(
+    Meal mealWithId = Meal(
         id: uuid.v4(),
         date: meal.date,
         name: meal.name,
         calories: meal.calories,
         weight: meal.weight,
         portion: meal.portion);
+
+    await database!.insert('Meals', mealWithId.toJson());
+    return mealWithId;
   }
 
   @override
   Future<Meal> updateMeal(Meal meal) async {
-    database!
+    await database!
         .update('Meals', meal.toJson(), where: 'id = ?', whereArgs: [meal.id]);
 
     return meal;
@@ -55,7 +58,13 @@ class LocalDataSourceImpl extends LocalDataSource {
 
   @override
   Future<String> deleteMeal(Meal meal) async {
-    database!.delete('Meals', where: 'id = ?', whereArgs: [meal.id]);
+    await database!.delete('Meals', where: 'id = ?', whereArgs: [meal.id]);
     return meal.id;
+  }
+
+  @override
+  Future<String> addDate(String date) async {
+    await database!.insert('Dates', {'date': date});
+    return date;
   }
 }

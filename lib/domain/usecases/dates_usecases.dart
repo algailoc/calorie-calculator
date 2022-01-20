@@ -22,4 +22,8 @@ class DatesUsecases {
   Future<String> deleteMeal(Meal meal) async {
     return await repository.deleteMeal(meal);
   }
+
+  Future<String> addDate(String date) async {
+    return await repository.addDate(date);
+  }
 }

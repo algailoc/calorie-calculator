@@ -46,7 +46,8 @@ class DatesListItem extends StatelessWidget {
                   ],
                 ),
                 const Spacer(),
-                Text('Overall: ${getDailyCalories(date)} kcal'),
+                // Text('Overall: ${getDailyCalories(date)} kcal'),
+                Text('${getDailyCalories(date)} kcal'),
                 const RotatedBox(
                   quarterTurns: 2,
                   child: Icon(Icons.arrow_back_ios),

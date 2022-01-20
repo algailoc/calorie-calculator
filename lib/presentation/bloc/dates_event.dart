@@ -22,3 +22,9 @@ class DeleteMealEvent extends DatesEvent {
 
   DeleteMealEvent(this.meal);
 }
+
+class AddDateEvent extends DatesEvent {
+  final String date;
+
+  AddDateEvent(this.date);
+}

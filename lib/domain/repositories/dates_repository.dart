@@ -6,4 +6,5 @@ abstract class DatesRepository {
   Future<Meal> addMeal(Meal meal);
   Future<Meal> updateMeal(Meal meal);
   Future<String> deleteMeal(Meal meal);
+  Future<String> addDate(String date);
 }

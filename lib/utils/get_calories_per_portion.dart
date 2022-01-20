@@ -7,7 +7,6 @@ Future<double> getCaloriesPerPortion(String portion, String name) async {
           data: {"query": '$portion $name'},
           options: Options(
             headers: {
-              // 'Content-Type': 'application/json',
               'x-app-id': 'db9377fc',
               'x-app-key': '1f9b53f1d93be0895ab150882ba9e802',
               'x-remote-user-id': 0,

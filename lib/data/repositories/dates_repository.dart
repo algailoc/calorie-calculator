@@ -29,4 +29,9 @@ class DatesRepositoryImpl extends DatesRepository {
   Future<Meal> updateMeal(Meal meal) async {
     return await localDataSource.updateMeal(meal);
   }
+
+  @override
+  Future<String> addDate(String date) async {
+    return await localDataSource.addDate(date);
+  }
 }

@@ -49,18 +49,20 @@ class DayPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GestureDetector(
                         onTap: Navigator.of(context).pop,
-                        child: const Icon(Icons.arrow_back_ios),
+                        child: Container(
+                            width: 40,
+                            height: 40,
+                            color: Colors.transparent,
+                            child: const Icon(Icons.arrow_back_ios)),
                       ),
                       Text(
                         date.date,
                         style: const TextStyle(
                             fontWeight: FontWeight.w600, fontSize: 16),
                       ),
-                      const SizedBox(),
                     ],
                   ),
                   const SizedBox(height: 20),

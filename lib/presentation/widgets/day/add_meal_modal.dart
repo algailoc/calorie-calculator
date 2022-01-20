@@ -1,7 +1,7 @@
 import 'package:calorie_calculator/domain/entities/meal.dart';
 import 'package:calorie_calculator/presentation/bloc/dates_bloc.dart';
 import 'package:calorie_calculator/utils/date_converters.dart';
-import 'package:calorie_calculator/utils/getCaloriesPerPortion.dart';
+import 'package:calorie_calculator/utils/get_calories_per_portion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -161,17 +161,16 @@ class _AddMealModalState extends State<AddOrUpdateMealModal> {
                       hint: 'Calories',
                       suffix: 'kcal'),
                 ),
-                Container(
-                    width: 40,
+                AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: nameController.text.isEmpty ? 0 : 40,
                     height: 40,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(50),
                     ),
                     child: IconButton(
-                        tooltip: nameController.text.isNotEmpty
-                            ? 'Calculate'
-                            : 'Fill in name field',
+                        tooltip: 'Calculate',
                         onPressed: () => calculateCalories(context),
                         icon: const Icon(Icons.calculate_outlined)))
               ],

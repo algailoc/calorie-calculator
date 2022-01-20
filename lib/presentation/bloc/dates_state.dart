@@ -12,13 +12,16 @@ class DatesInitial extends DatesState {
 }
 
 class DatesLoadedState extends DatesState {
-  final List<Date> dates;
-
-  DatesLoadedState(this.dates) : super(dates: dates);
+  DatesLoadedState(dates) : super(dates: dates);
 }
 
 class DatePendingState extends DatesState {
-  final List<Date> dates;
+  DatePendingState(dates) : super(dates: dates);
+}
 
-  DatePendingState(this.dates) : super(dates: dates);
+class DateFailureState extends DatesState {
+  // final List<Date> dates;
+  final String message;
+
+  DateFailureState(dates, this.message) : super(dates: dates);
 }
