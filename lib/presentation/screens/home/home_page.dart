@@ -13,48 +13,6 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-List<Meal> getMockMeals(String date) {
-  return [
-    Meal(
-        id: 'id',
-        date: date,
-        name: 'Картошка',
-        calories: 100,
-        weight: 150,
-        portion: '1 тарелка'),
-    Meal(
-        id: 'id',
-        date: date,
-        name: 'Картошка',
-        calories: 100,
-        weight: 150,
-        portion: '1 тарелка'),
-    Meal(
-        id: 'id',
-        date: date,
-        name: 'Картошка',
-        calories: 100,
-        weight: 150,
-        portion: '1 тарелка'),
-  ];
-}
-
-List<Date> mockDates = [
-  Date(
-      date: dateToString(DateTime.now().toLocal()),
-      meals: getMockMeals(dateToString(DateTime.now().toLocal()))),
-  Date(
-      date: dateToString(
-          DateTime.now().toLocal().subtract(const Duration(days: 1))),
-      meals: getMockMeals(dateToString(
-          DateTime.now().toLocal().subtract(const Duration(days: 1))))),
-  Date(
-      date: dateToString(
-          DateTime.now().toLocal().subtract(const Duration(days: 2))),
-      meals: getMockMeals(dateToString(
-          DateTime.now().toLocal().subtract(const Duration(days: 2))))),
-];
-
 class _HomePageState extends State<HomePage> {
   @override
   void initState() {
